@@ -29,6 +29,7 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
     private LinearLayoutManager linearLayoutManager;
     private List<T> idName;
     private SearchAdapter searchAdapter;
+    private PopupWindow mPopupWindow;
 
     public void main(Activity context, List<T> idName, String identifier, SetDataOnItemSelection setDataOnItemSelection,CallApi callApi) {
         this.setDataOnItemSelection = setDataOnItemSelection;
@@ -45,7 +46,7 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
      */
     private void showList(Activity context,String identifier) {
         View popupView = LayoutInflater.from(context).inflate(R.layout.popup_showlist, null);
-        PopupWindow mPopupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        mPopupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
         mPopupWindow.setFocusable(true);
 
         mListView = popupView.findViewById(R.id.items_list);
@@ -63,13 +64,13 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                callApi.callApi(query,0);
+                callApi.callApi(query,0,true);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                callApi.callApi(newText,0);
+                callApi.callApi(newText,0,true);
                 return false;
             }
         });
@@ -95,7 +96,7 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if (!mIsLoading) {
                     if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == idName.size() - 1) {
-                        callApi.callApi("",idName.size());
+                        callApi.callApi("",idName.size(),false);
                         mIsLoading = true;
                     }
                 }
@@ -129,6 +130,7 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
     @Override
     public void setDataForUserSelectedItem(String idName, int position, String identifier) {
         setDataOnItemSelection.onItemSelected(idName,position,identifier);
+        mPopupWindow.dismiss();
     }
 
     public interface SetDataOnItemSelection{
@@ -136,6 +138,6 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
     }
 
     public interface CallApi{
-        void callApi(String searchKey, int skip);
+        void callApi(String searchKey, int skip,boolean search);
     }
 }
