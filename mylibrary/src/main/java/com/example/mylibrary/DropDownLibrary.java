@@ -14,34 +14,31 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
-    private static Context mContext;
-    private static IdName idName;
-    private static int position;
-    private static String identifier;
-    private static RecyclerView mListView;
-    private static PopupWindow mPopupWindow;
 
-    public static void main(Context context,String searchKey, List<IdName> idName, String identifier, SearchAdapter.SetEmployeeName activity) {
-        mContext = context;
-        SearchAdapter searchAdapter = new SearchAdapter(idName, activity, identifier);
-        mListView.setAdapter(searchAdapter);
+    private SetDataOnItemSelection setDataOnItemSelection;
+
+    public void main(Context context, List<IdName> idName, String identifier,SetDataOnItemSelection setDataOnItemSelection) {
+        this.setDataOnItemSelection = setDataOnItemSelection;
+        showList(context,idName,identifier);
     }
 
     /**
      * Method Name : showList
      * Used For : to show all the list in popup
      *
-     * @param view
+     * @param context
+     * @param idName
+     * @param identifier
      */
-    public static void showList(View view, String api) {
-        View popupView = LayoutInflater.from(mContext).inflate(R.layout.popup_showlist, null);
-        mPopupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+    public void showList(Context context,List<IdName> idName,String identifier) {
+        View popupView = LayoutInflater.from(context).inflate(R.layout.popup_showlist, null);
+        PopupWindow mPopupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
         mPopupWindow.setFocusable(true);
 
-        mListView = popupView.findViewById(R.id.items_list);
+        RecyclerView mListView = popupView.findViewById(R.id.items_list);
         SearchView searchView = popupView.findViewById(R.id.search);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         mListView.setLayoutManager(linearLayoutManager);
 
         searchView.setActivated(true);
@@ -62,17 +59,18 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
             }
         });
 
+        SearchAdapter searchAdapter = new SearchAdapter(idName,DropDownLibrary.this, identifier);
+        mListView.setAdapter(searchAdapter);
+
         mPopupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
     }
 
     @Override
     public void setDataForUserSelectedItem(IdName idName, int position, String identifier) {
-        this.idName = idName;
-        this.position = position;
-        this.identifier = identifier;
+        setDataOnItemSelection.onItemSelected(idName,position,identifier);
     }
 
     public interface SetDataOnItemSelection{
-        void onItemSelectedd(IdName idName, int position,String identifier);
+        void onItemSelected(IdName idName, int position,String identifier);
     }
 }
