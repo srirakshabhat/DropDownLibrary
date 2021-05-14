@@ -1,6 +1,5 @@
 package com.example.mylibrary;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +10,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 
-public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchViewHolder>{
+public class SearchAdapter<T> extends RecyclerView.Adapter<SearchAdapter.SearchViewHolder>{
 
-    private List<IdName> userList;
-    private SetEmployeeName  setEmployeeName;
-    private String identifier;
+    private final List<T> userList;
+    private final SetEmployeeName  setEmployeeName;
+    private final String identifier;
 
-    public SearchAdapter(List<IdName> userList, SetEmployeeName setEmployeeName, String identifier) {
+    public SearchAdapter(List<T> userList, SetEmployeeName setEmployeeName, String identifier) {
         this.userList = userList;
         this.setEmployeeName = setEmployeeName;
         this.identifier = identifier;
@@ -34,11 +33,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
     @Override
     public void onBindViewHolder(@NonNull SearchViewHolder holder, int position) {
-        holder.textView.setText(userList.get(position).getName());
+        holder.textView.setText(userList.get(position).toString());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setEmployeeName.setDataForUserSelectedItem(userList.get(position), position,identifier);
+                setEmployeeName.setDataForUserSelectedItem(userList.get(position).toString(), position,identifier);
             }
         });
     }
@@ -57,7 +56,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
     }
 
     public interface SetEmployeeName{
-        void setDataForUserSelectedItem(IdName idName, int position, String identifier);
+        void setDataForUserSelectedItem(String idName, int position, String identifier);
     }
 }
 
