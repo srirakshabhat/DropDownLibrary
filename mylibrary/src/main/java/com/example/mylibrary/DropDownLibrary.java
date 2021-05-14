@@ -1,6 +1,7 @@
 package com.example.mylibrary;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
@@ -37,9 +38,10 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
         this.setDataOnItemSelection = setDataOnItemSelection;
         this.callApi = callApi;
         this.idName = idName;
+        initializePopup(context);
         if(mShowingListForFirstTime)
-            showList(context);
-        searchView();
+            showList();
+        searchView(context);
         setData(identifier);
         lazyLoading();
     }
@@ -47,10 +49,14 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
     /**
      * Method Name : showList
      * Used For : to show all the list in popup
-     *  @param context
      */
-    private void showList(Activity context) {
+    private void showList() {
+        mPopupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+    }
+
+    private void initializePopup(Activity context){
         popupView = LayoutInflater.from(context).inflate(R.layout.popup_showlist, null);
+
         mPopupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
         mPopupWindow.setFocusable(true);
 
@@ -58,12 +64,11 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
         linearLayoutManager = new LinearLayoutManager(context);
         mListView.setLayoutManager(linearLayoutManager);
 
-        mPopupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
-    }
-
-    private void searchView(){
         searchView = popupView.findViewById(R.id.search);
 
+    }
+
+    private void searchView(Context context){
         searchView.setActivated(true);
         searchView.setQueryHint("Search & Select");
         searchView.onActionViewExpanded();
