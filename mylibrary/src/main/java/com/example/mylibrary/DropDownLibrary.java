@@ -23,30 +23,48 @@ import java.util.List;
 
 public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
 
-
     private SetDataOnItemSelection setDataOnItemSelection;
     private CallApi callApi;
-    private RecyclerView mListView;
-    private boolean mIsLoading = false;
-    private LinearLayoutManager linearLayoutManager;
-    private List<IdName> idName;
-    private SearchAdapter searchAdapter;
+
     private PopupWindow mPopupWindow;
     private SearchView searchView;
     private View popupView;
-    private String identifier;
-    private String searckKey;
 
+    private LinearLayoutManager linearLayoutManager;
+    private SearchAdapter searchAdapter;
+    private RecyclerView mListView;
+
+    private List<IdName> idName;
+    private String identifier,mSearchKey;
+    private boolean mIsLoading = false;
+
+    /**
+     * Method Name : main
+     * Used For : method gets called in the beggining
+     *
+     * @param context
+     * @param identifier
+     * @param callApi
+     * @param setDataOnItemSelection
+     */
     public void main(Activity context, String identifier,SetDataOnItemSelection setDataOnItemSelection, CallApi callApi) {
         this.setDataOnItemSelection = setDataOnItemSelection;
         this.callApi = callApi;
         this.identifier = identifier;
+
         initializePopup(context);
         showList();
         searchView();
         lazyLoading();
     }
 
+    /**
+     * Method Name : updateList
+     * Used For : to update list at first, on lazy loading and on search
+     *
+     * @param idName
+     *      Model class which contains id and name. Id to send for BE and name for displaying to user.
+     */
     public void updateList(List<IdName> idName){
         mIsLoading = true;
         this.idName = idName;
@@ -61,12 +79,18 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
 
     /**
      * Method Name : showList
-     * Used For : to show all the list in popup
+     * Used For : to show popup
      */
     private void showList() {
         mPopupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
     }
 
+    /**
+     * Method Name : initializePopup
+     * Used For : to initializePopup popup
+     *
+     * @param context
+     */
     private void initializePopup(Activity context){
 
         popupView = LayoutInflater.from(context).inflate(R.layout.popup_showlist, null);
@@ -82,6 +106,10 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
 
     }
 
+    /**
+     * Method Name : searchView
+     * Used For : to search items in list
+     */
     private void searchView(){
         searchView.setActivated(true);
         searchView.setQueryHint("Search & Select");
@@ -92,14 +120,14 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searckKey = query;
+                mSearchKey = query;
                 callApi.callApi(query,0,true);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                searckKey = newText;
+                mSearchKey = newText;
                 callApi.callApi(newText,0,true);
                 return false;
             }
@@ -118,7 +146,7 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if (!mIsLoading) {
                     if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == idName.size() - 1) {
-                        callApi.callApi(searckKey,idName.size(),false);
+                        callApi.callApi(mSearchKey,idName.size(),false);
                         mIsLoading = true;
                     }
                 }
@@ -149,16 +177,33 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
     }
 
 
+    /**
+     * Method Name : setDataForUserSelectedItem
+     * Used For : interface to update adapter data to this class
+     *
+     * @param idName
+     * @param identifier
+     * @param position
+     */
     @Override
     public void setDataForUserSelectedItem(IdName idName, int position, String identifier) {
         setDataOnItemSelection.onItemSelected(idName,position,identifier);
         mPopupWindow.dismiss();
     }
 
+    /**
+     * Method Name : SetDataOnItemSelection
+     * Used For : this imterface is used in the class which uses the library
+     * to update data in that particular class (class which uses the library)
+     */
     public interface SetDataOnItemSelection{
         void onItemSelected(IdName idName, int position, String identifier);
     }
 
+    /**
+     * Method Name : CallApi
+     * Used For : to call api during search and lazyloading
+     */
     public interface CallApi{
         void callApi(String searchKey, int skip,boolean search);
     }

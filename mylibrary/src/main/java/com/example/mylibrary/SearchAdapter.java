@@ -16,14 +16,23 @@ public class SearchAdapter<T> extends RecyclerView.Adapter<SearchAdapter.SearchV
     private final SetEmployeeName  setEmployeeName;
     private final String identifier;
 
+    /**
+     * Method Name : SearchAdapter
+     * Used For : constructor to pass list data and initialize interface
+     */
     public SearchAdapter(List<IdName> userList, SetEmployeeName setEmployeeName, String identifier) {
         this.userList = userList;
         this.setEmployeeName = setEmployeeName;
         this.identifier = identifier;
     }
 
-
-
+    /**
+     * Method Name : onCreateViewHolder
+     * Used For : to inflate the item layout
+     *
+     * @param parent
+     * @param viewType
+     */
     @NonNull
     @Override
     public SearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -31,6 +40,13 @@ public class SearchAdapter<T> extends RecyclerView.Adapter<SearchAdapter.SearchV
         return new SearchViewHolder(view);
     }
 
+    /**
+     * Method Name : onBindViewHolder
+     * Used For : to handle necessary logics and set list data to recyclerview
+     *
+     * @param position
+     * @param holder
+     */
     @Override
     public void onBindViewHolder(@NonNull SearchViewHolder holder, int position) {
         holder.textView.setText(userList.get(position).getName());
@@ -42,11 +58,19 @@ public class SearchAdapter<T> extends RecyclerView.Adapter<SearchAdapter.SearchV
         });
     }
 
+    /**
+     * Method Name : getItemCount
+     * Used For : to get the size of list
+     */
     @Override
     public int getItemCount() {
         return userList.size();
     }
 
+    /**
+     * Method Name : SearchViewHolder
+     * Used For : to declare & initialize fields in item layout
+     */
     public static class SearchViewHolder extends RecyclerView.ViewHolder {
         public TextView textView;
         public SearchViewHolder(@NonNull View itemView) {
@@ -55,6 +79,10 @@ public class SearchAdapter<T> extends RecyclerView.Adapter<SearchAdapter.SearchV
         }
     }
 
+    /**
+     * Method Name : SetEmployeeName
+     * Used For : interface to pass data to whichever class it is implemented
+     */
     public interface SetEmployeeName{
         void setDataForUserSelectedItem(IdName idName, int position, String identifier);
     }
