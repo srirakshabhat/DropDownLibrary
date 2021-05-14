@@ -17,7 +17,7 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
 
     private SetDataOnItemSelection setDataOnItemSelection;
 
-    public void main(Context context, List<IdName> idName, String identifier,SetDataOnItemSelection setDataOnItemSelection) {
+    public void main(Context context, List<IdName> idName, String identifier, SetDataOnItemSelection setDataOnItemSelection) {
         this.setDataOnItemSelection = setDataOnItemSelection;
         showList(context,idName,identifier);
     }
@@ -30,7 +30,7 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
      * @param idName
      * @param identifier
      */
-    public void showList(Context context,List<IdName> idName,String identifier) {
+    private void showList(Context context,List<IdName> idName,String identifier) {
         View popupView = LayoutInflater.from(context).inflate(R.layout.popup_showlist, null);
         PopupWindow mPopupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
         mPopupWindow.setFocusable(true);
