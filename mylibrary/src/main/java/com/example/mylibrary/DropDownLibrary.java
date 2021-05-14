@@ -30,21 +30,25 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
     private List<T> idName;
     private SearchAdapter searchAdapter;
     private PopupWindow mPopupWindow;
+    private SearchView searchView;
 
-    public void main(Activity context, List<T> idName, String identifier, SetDataOnItemSelection setDataOnItemSelection,CallApi callApi) {
+    public void main(Activity context, List<T> idName, String identifier, SetDataOnItemSelection setDataOnItemSelection,CallApi callApi,boolean mShowingListForFirstTime) {
         this.setDataOnItemSelection = setDataOnItemSelection;
         this.callApi = callApi;
         this.idName = idName;
-        showList(context,identifier);
+        if(mShowingListForFirstTime)
+            showList(context);
+        searchView();
+        setData(identifier);
+        lazyLoading();
     }
 
     /**
      * Method Name : showList
      * Used For : to show all the list in popup
      *  @param context
-     * @param identifier
      */
-    private void showList(Activity context,String identifier) {
+    private void showList(Activity context) {
         View popupView = LayoutInflater.from(context).inflate(R.layout.popup_showlist, null);
         mPopupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
         mPopupWindow.setFocusable(true);
@@ -52,9 +56,13 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
         mListView = popupView.findViewById(R.id.items_list);
         linearLayoutManager = new LinearLayoutManager(context);
         mListView.setLayoutManager(linearLayoutManager);
-        lazyLoading();
 
-        SearchView searchView = popupView.findViewById(R.id.search);
+        searchView = popupView.findViewById(R.id.search);
+
+        mPopupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+    }
+
+    private void searchView(){
         searchView.setActivated(true);
         searchView.setQueryHint("Search & Select");
         searchView.onActionViewExpanded();
@@ -74,14 +82,14 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
                 return false;
             }
         });
+    }
 
+    private void setData(String identifier){
         if(searchAdapter == null) {
             searchAdapter = new SearchAdapter(idName, DropDownLibrary.this, identifier);
             mListView.setAdapter(searchAdapter);
         }else
             loadMore();
-
-        mPopupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
     }
 
     /*Method to lazy loading*/
