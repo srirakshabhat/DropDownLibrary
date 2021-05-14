@@ -12,11 +12,11 @@ import java.util.List;
 
 public class SearchAdapter<T> extends RecyclerView.Adapter<SearchAdapter.SearchViewHolder>{
 
-    private final List<T> userList;
+    private final List<IdName> userList;
     private final SetEmployeeName  setEmployeeName;
     private final String identifier;
 
-    public SearchAdapter(List<T> userList, SetEmployeeName setEmployeeName, String identifier) {
+    public SearchAdapter(List<IdName> userList, SetEmployeeName setEmployeeName, String identifier) {
         this.userList = userList;
         this.setEmployeeName = setEmployeeName;
         this.identifier = identifier;
@@ -33,11 +33,11 @@ public class SearchAdapter<T> extends RecyclerView.Adapter<SearchAdapter.SearchV
 
     @Override
     public void onBindViewHolder(@NonNull SearchViewHolder holder, int position) {
-        holder.textView.setText(userList.get(position).toString());
+        holder.textView.setText(userList.get(position).getName());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setEmployeeName.setDataForUserSelectedItem(userList.get(position).toString(), position,identifier);
+                setEmployeeName.setDataForUserSelectedItem(userList.get(position), position,identifier);
             }
         });
     }
@@ -56,7 +56,7 @@ public class SearchAdapter<T> extends RecyclerView.Adapter<SearchAdapter.SearchV
     }
 
     public interface SetEmployeeName{
-        void setDataForUserSelectedItem(String idName, int position, String identifier);
+        void setDataForUserSelectedItem(IdName idName, int position, String identifier);
     }
 }
 

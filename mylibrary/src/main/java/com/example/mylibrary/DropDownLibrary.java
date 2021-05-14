@@ -21,29 +21,42 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
+public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
+
 
     private SetDataOnItemSelection setDataOnItemSelection;
     private CallApi callApi;
     private RecyclerView mListView;
-    private boolean mIsLoading;
+    private boolean mIsLoading = false;
     private LinearLayoutManager linearLayoutManager;
-    private List<T> idName;
+    private List<IdName> idName;
     private SearchAdapter searchAdapter;
     private PopupWindow mPopupWindow;
     private SearchView searchView;
     private View popupView;
+    private String identifier;
+    private String searckKey;
 
-    public void main(Activity context, List<T> idName, String identifier, SetDataOnItemSelection setDataOnItemSelection,CallApi callApi,boolean mShowingListForFirstTime) {
+    public void main(Activity context, String identifier,SetDataOnItemSelection setDataOnItemSelection, CallApi callApi) {
         this.setDataOnItemSelection = setDataOnItemSelection;
         this.callApi = callApi;
-        this.idName = idName;
+        this.identifier = identifier;
         initializePopup(context);
-        if(mShowingListForFirstTime)
-            showList();
-        searchView(context);
-        setData(identifier);
+        showList();
+        searchView();
         lazyLoading();
+    }
+
+    public void updateList(List<IdName> idName){
+        mIsLoading = true;
+        this.idName = idName;
+        if(searchAdapter == null) {
+            searchAdapter = new SearchAdapter(idName, DropDownLibrary.this, identifier);
+            mListView.setAdapter(searchAdapter);
+            mIsLoading = false;
+        }else {
+            loadMore();
+        }
     }
 
     /**
@@ -55,6 +68,7 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
     }
 
     private void initializePopup(Activity context){
+
         popupView = LayoutInflater.from(context).inflate(R.layout.popup_showlist, null);
 
         mPopupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
@@ -68,7 +82,7 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
 
     }
 
-    private void searchView(Context context){
+    private void searchView(){
         searchView.setActivated(true);
         searchView.setQueryHint("Search & Select");
         searchView.onActionViewExpanded();
@@ -78,24 +92,18 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                searckKey = query;
                 callApi.callApi(query,0,true);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                searckKey = newText;
                 callApi.callApi(newText,0,true);
                 return false;
             }
         });
-    }
-
-    private void setData(String identifier){
-        if(searchAdapter == null) {
-            searchAdapter = new SearchAdapter(idName, DropDownLibrary.this, identifier);
-            mListView.setAdapter(searchAdapter);
-        }else
-            loadMore();
     }
 
     /*Method to lazy loading*/
@@ -110,7 +118,7 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if (!mIsLoading) {
                     if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == idName.size() - 1) {
-                        callApi.callApi("",idName.size(),false);
+                        callApi.callApi(searckKey,idName.size(),false);
                         mIsLoading = true;
                     }
                 }
@@ -142,13 +150,13 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
 
 
     @Override
-    public void setDataForUserSelectedItem(String idName, int position, String identifier) {
+    public void setDataForUserSelectedItem(IdName idName, int position, String identifier) {
         setDataOnItemSelection.onItemSelected(idName,position,identifier);
         mPopupWindow.dismiss();
     }
 
     public interface SetDataOnItemSelection{
-        void onItemSelected(String idName, int position, String identifier);
+        void onItemSelected(IdName idName, int position, String identifier);
     }
 
     public interface CallApi{
