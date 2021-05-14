@@ -58,12 +58,12 @@ public class DropDownLibrary<T> implements SearchAdapter.SetEmployeeName{
         linearLayoutManager = new LinearLayoutManager(context);
         mListView.setLayoutManager(linearLayoutManager);
 
-        searchView = popupView.findViewById(R.id.search);
-
         mPopupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
     }
 
     private void searchView(){
+        searchView = popupView.findViewById(R.id.search);
+
         searchView.setActivated(true);
         searchView.setQueryHint("Search & Select");
         searchView.onActionViewExpanded();
