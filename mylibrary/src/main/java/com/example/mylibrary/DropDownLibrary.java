@@ -50,13 +50,13 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
     public void updateList(List<IdName> idName){
         mIsLoading = true;
         this.idName = idName;
-        if(searchAdapter == null) {
+       // if(searchAdapter == null) {
             searchAdapter = new SearchAdapter(idName, DropDownLibrary.this, identifier);
             mListView.setAdapter(searchAdapter);
             mIsLoading = false;
-        }else {
+       /* }else {
             loadMore();
-        }
+        }*/
     }
 
     /**
