@@ -2,6 +2,7 @@ package com.example.mylibrary;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
@@ -35,7 +36,7 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
     private RecyclerView mListView;
 
     private List<IdName> idName;
-    private String identifier,mSearchKey;
+    private String mSearchKey;
     private boolean mIsLoading = false;
 
     /**
@@ -50,7 +51,6 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
     public void main(Activity context, String identifier,SetDataOnItemSelection setDataOnItemSelection, CallApi callApi) {
         this.setDataOnItemSelection = setDataOnItemSelection;
         this.callApi = callApi;
-        this.identifier = identifier;
 
         initializePopup(context);
         showList();
@@ -69,7 +69,7 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
         mIsLoading = true;
         this.idName = idName;
         if(searchAdapter == null) {
-            searchAdapter = new SearchAdapter(idName, DropDownLibrary.this, identifier);
+            searchAdapter = new SearchAdapter(idName, DropDownLibrary.this);
             mListView.setAdapter(searchAdapter);
             mIsLoading = false;
         }else {
@@ -83,6 +83,29 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
      */
     private void showList() {
         mPopupWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+        dimBehind(mPopupWindow);
+    }
+
+    /**
+     * Method Name : dimBehind
+     * Used For : to dim behind thepopup
+     */
+    public static void dimBehind(PopupWindow popupWindow) {
+        View container;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            container = (View) popupWindow.getContentView().getParent();
+        } else {
+            container = popupWindow.getContentView();
+        }
+        if (popupWindow.getBackground() != null) {
+            container = (View) container.getParent();
+        }
+        Context context = popupWindow.getContentView().getContext();
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager.LayoutParams p = (WindowManager.LayoutParams) container.getLayoutParams();
+        p.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND; // add a flag here instead of clear others
+        p.dimAmount = 0.6f;
+        wm.updateViewLayout(container, p);
     }
 
     /**
@@ -182,12 +205,11 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
      * Used For : interface to update adapter data to this class
      *
      * @param idName
-     * @param identifier
      * @param position
      */
     @Override
-    public void setDataForUserSelectedItem(IdName idName, int position, String identifier) {
-        setDataOnItemSelection.onItemSelected(idName,position,identifier);
+    public void setDataForUserSelectedItem(IdName idName, int position) {
+        setDataOnItemSelection.onItemSelected(idName,position);
         mPopupWindow.dismiss();
     }
 
@@ -197,7 +219,7 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
      * to update data in that particular class (class which uses the library)
      */
     public interface SetDataOnItemSelection{
-        void onItemSelected(IdName idName, int position, String identifier);
+        void onItemSelected(IdName idName, int position);
     }
 
     /**

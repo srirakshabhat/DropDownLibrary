@@ -14,16 +14,14 @@ public class SearchAdapter<T> extends RecyclerView.Adapter<SearchAdapter.SearchV
 
     private final List<IdName> userList;
     private final SetEmployeeName  setEmployeeName;
-    private final String identifier;
 
     /**
      * Method Name : SearchAdapter
      * Used For : constructor to pass list data and initialize interface
      */
-    public SearchAdapter(List<IdName> userList, SetEmployeeName setEmployeeName, String identifier) {
+    public SearchAdapter(List<IdName> userList, SetEmployeeName setEmployeeName) {
         this.userList = userList;
         this.setEmployeeName = setEmployeeName;
-        this.identifier = identifier;
     }
 
     /**
@@ -53,7 +51,7 @@ public class SearchAdapter<T> extends RecyclerView.Adapter<SearchAdapter.SearchV
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setEmployeeName.setDataForUserSelectedItem(userList.get(position), position,identifier);
+                setEmployeeName.setDataForUserSelectedItem(userList.get(position), position);
             }
         });
     }
@@ -84,7 +82,7 @@ public class SearchAdapter<T> extends RecyclerView.Adapter<SearchAdapter.SearchV
      * Used For : interface to pass data to whichever class it is implemented
      */
     public interface SetEmployeeName{
-        void setDataForUserSelectedItem(IdName idName, int position, String identifier);
+        void setDataForUserSelectedItem(IdName idName, int position);
     }
 }
 
