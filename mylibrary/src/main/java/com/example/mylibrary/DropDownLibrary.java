@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.List;
 
@@ -143,22 +139,30 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                mIsLoading = true;
-                list.clear();
-                mSearchKey = query;
-                callApi.callApi(query);
+                callSearch(query);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                mIsLoading = true;
-                list.clear();
-                mSearchKey = newText;
-                callApi.callApi(newText);
+                callSearch(newText);
                 return true;
             }
         });
+    }
+
+    /**
+     * Method Name : callSearch
+     * Used For : to clear old list and call api with new search key
+     *
+     * @param searchKey
+     */
+    private void callSearch(String searchKey){
+        mIsLoading = true;
+        list.clear();
+        searchAdapter.notifyDataSetChanged();
+        mSearchKey = searchKey;
+        callApi.callApi(searchKey);
     }
 
     /*Method to lazy loading*/
