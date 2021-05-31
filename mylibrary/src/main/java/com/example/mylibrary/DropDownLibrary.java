@@ -35,7 +35,7 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
     private SearchAdapter searchAdapter;
     private RecyclerView mListView;
 
-    private List<IdName> idName;
+    private List<IdName> list;
     private String mSearchKey;
     private boolean mIsLoading = false;
 
@@ -62,14 +62,14 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
      * Method Name : updateList
      * Used For : to update list at first, on lazy loading and on search
      *
-     * @param idName
+     * @param list
      *      Model class which contains id and name. Id to send for BE and name for displaying to user.
      */
-    public void updateList(List<IdName> idName){
+    public void updateList(List<IdName> list){
         mIsLoading = true;
-        this.idName = idName;
+        this.list = list;
         if(searchAdapter == null) {
-            searchAdapter = new SearchAdapter(idName, DropDownLibrary.this);
+            searchAdapter = new SearchAdapter(list, DropDownLibrary.this);
             mListView.setAdapter(searchAdapter);
             mIsLoading = false;
         }else {
@@ -143,16 +143,20 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                mIsLoading = true;
+                list.clear();
                 mSearchKey = query;
-                callApi.callApi(query,true);
-                return false;
+                callApi.callApi(query);
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                mIsLoading = true;
+                list.clear();
                 mSearchKey = newText;
-                callApi.callApi(newText,true);
-                return false;
+                callApi.callApi(newText);
+                return true;
             }
         });
     }
@@ -168,8 +172,8 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if (!mIsLoading) {
-                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == idName.size() - 1) {
-                        callApi.callApi(mSearchKey,false);
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == list.size() - 1) {
+                        callApi.callApi(mSearchKey);
                         mIsLoading = true;
                     }
                 }
@@ -183,7 +187,7 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
      */
     private void loadMore() {
         ViewCompat.setNestedScrollingEnabled(mListView, true);
-        int current_pos = idName.size();
+        int current_pos = list.size();
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -227,6 +231,6 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
      * Used For : to call api during search and lazyloading
      */
     public interface CallApi{
-        void callApi(String searchKey,boolean search);
+        void callApi(String searchKey);
     }
 }
