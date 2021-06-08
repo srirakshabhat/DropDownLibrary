@@ -16,6 +16,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
@@ -31,8 +32,8 @@ public class DropDownLibrary implements SearchAdapter.SetEmployeeName{
     private SearchAdapter searchAdapter;
     private RecyclerView mListView;
 
-    private List<IdName> list;
-    private String mSearchKey;
+    private List<IdName> list = new ArrayList<>();
+    private String mSearchKey = "";
     private boolean mIsLoading = false;
 
     /**
